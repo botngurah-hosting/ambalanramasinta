@@ -41,28 +41,6 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <!-- Tombol Tambah Data Baru (CREATE) -->
-      <button
-        type="button"
-        onclick="openModalCreate()"
-        class="inline-flex items-center gap-1 text-[10px] bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-xl font-bold transition-all active:scale-95 cursor-pointer shadow-sm"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-3 h-3"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="3"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        Tambah Data
-      </button>
-
       <!-- Tombol Refresh Data -->
       <button
         type="button"
@@ -84,29 +62,6 @@
           <path d="M21.34 15.57a10 10 0 1 1-.57-8.38"></path>
         </svg>
         Refresh
-      </button>
-
-      <!-- Tombol Logout -->
-      <button
-        type="button"
-        onclick="logout()"
-        class="inline-flex items-center gap-1 text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl font-bold border border-rose-200/60 transition-all active:scale-95 cursor-pointer"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-3 h-3"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
-        Keluar
       </button>
     </div>
   </div>
@@ -542,7 +497,6 @@
     };
 
     if (!Array.isArray(item) && typeof item === "object") {
-      // Pembacaan Object - Memeriksa semua kemungkinan variasi nama kolom
       user.id = String(
         item.id ||
           item.NTA ||
@@ -578,7 +532,6 @@
           "-",
       ).trim();
 
-      // Ukuran Baju: Lengkap dengan semua variasi key yang biasa dipakai Google Sheets
       user.ukuran = String(
         item.ukuran ||
           item.Ukuran ||
@@ -592,7 +545,6 @@
           "-",
       ).trim();
 
-      // Metode Pembayaran
       user.pembayaran = String(
         item.pembayaran ||
           item.Pembayaran ||
@@ -610,7 +562,6 @@
       user.link_foto = item.link_foto || item.foto || "";
       user.link_bukti = item.link_bukti || item.bukti || "";
     } else if (Array.isArray(item)) {
-      // Pembacaan Array dari Google Sheets
       var firstCell = String(item[0] || "")
         .toLowerCase()
         .trim();
@@ -619,7 +570,7 @@
           firstCell,
         ) !== -1
       ) {
-        return null; // Mengabaikan Baris Header
+        return null;
       }
 
       var isTimestamp = false;
@@ -650,7 +601,7 @@
       return null;
     }
 
-    // --- LOGIKA AUTO-HEALING (PERBAIKAN / TUKAR KOLOM TERBALIK) ---
+    // LOGIKA AUTO-HEALING
     var isPaymentVal = function (val) {
       var v = String(val || "")
         .toLowerCase()
@@ -671,22 +622,17 @@
       return ["S", "M", "L", "XL", "XXL", "3XL", "XXXL"].indexOf(v) !== -1;
     };
 
-    // Kasus 1: Jika user.ukuran berisi pembayaran DAN user.pembayaran berisi ukuran -> TUKAR (SWAP)!
     if (isPaymentVal(user.ukuran) && isSizeVal(user.pembayaran)) {
       var temp = user.ukuran;
       user.ukuran = user.pembayaran;
       user.pembayaran = temp;
-    }
-    // Kasus 2: Jika user.ukuran berisi pembayaran, tapi user.pembayaran kosong
-    else if (
+    } else if (
       isPaymentVal(user.ukuran) &&
       (!user.pembayaran || user.pembayaran === "-")
     ) {
       user.pembayaran = user.ukuran;
       user.ukuran = "-";
-    }
-    // Kasus 3: Jika user.pembayaran berisi ukuran baju, tapi user.ukuran kosong
-    else if (
+    } else if (
       isSizeVal(user.pembayaran) &&
       (!user.ukuran || user.ukuran === "-")
     ) {
@@ -694,7 +640,6 @@
       user.pembayaran = "-";
     }
 
-    // Pengecekan aman untuk kolom Angkatan jika tertukar
     if (isPaymentVal(user.angkatan)) {
       if (!user.pembayaran || user.pembayaran === "-")
         user.pembayaran = user.angkatan;
@@ -704,7 +649,6 @@
       user.angkatan = "-";
     }
 
-    // Pengecekan aman untuk kolom No HP jika tertukar
     if (isSizeVal(user.no_hp)) {
       if (!user.ukuran || user.ukuran === "-") user.ukuran = user.no_hp;
       user.no_hp = "-";
@@ -767,7 +711,6 @@
       if (bayar.toLowerCase() === "cash") cash++;
       else if (bayar.toLowerCase() === "transfer") transfer++;
 
-      // Perbaikan pembacaan ukuran baju untuk kartu statistik
       var uk = user.ukuran.toUpperCase().trim().replace(/\s+/g, "");
       if (uk === "S") s++;
       else if (uk === "M") m++;
@@ -842,15 +785,6 @@
     setElText("stat_xxl", xxl);
     setElText("stat_xxxl", xxxl);
     setElText("admin_row_count", "Menampilkan " + total + " data");
-  }
-
-  function openModalCreate() {
-    document.getElementById("modalTitle").innerText =
-      "Tambah Data Anggota Baru";
-    document.getElementById("crudForm").reset();
-    document.getElementById("form_is_edit").value = "false";
-    document.getElementById("form_id").readOnly = false;
-    document.getElementById("crudModal").classList.remove("hidden");
   }
 
   function openModalEdit(id) {
@@ -1049,11 +983,5 @@
       setElText(id, 0);
     });
     setElText("admin_row_count", "Menampilkan 0 data");
-  }
-
-  function logout() {
-    if (confirm("Apakah Anda yakin ingin keluar?")) {
-      location.reload();
-    }
   }
 </script>
