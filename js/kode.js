@@ -5,6 +5,55 @@ const SCRIPT_URL =
 
 let currentUser = null;
 
+// ================= HELPER NOTIFIKASI (SWEETALERT2) =================
+
+function showAlert(message, type = "info", title = "") {
+  if (typeof Swal !== "undefined") {
+    const titles = {
+      success: title || "Berhasil!",
+      error: title || "Gagal!",
+      warning: title || "Peringatan!",
+      info: title || "Informasi",
+    };
+
+    return Swal.fire({
+      title: titles[type] || title,
+      text: message,
+      icon: type,
+      confirmButtonColor: "#0284c7", // Tailwind sky-600
+      customClass: {
+        popup: "rounded-3xl p-6",
+        confirmButton: "px-5 py-2.5 rounded-xl font-bold text-xs shadow-md",
+      },
+    });
+  } else {
+    alert(message);
+  }
+}
+
+async function showConfirm(message, title = "Konfirmasi") {
+  if (typeof Swal !== "undefined") {
+    const result = await Swal.fire({
+      title: title,
+      text: message,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444", // Tailwind red-500
+      cancelButtonColor: "#64748b", // Tailwind slate-500
+      confirmButtonText: "Ya, Lanjutkan",
+      cancelButtonText: "Batal",
+      customClass: {
+        popup: "rounded-3xl p-6",
+        confirmButton: "px-4 py-2 rounded-xl font-bold text-xs shadow-md",
+        cancelButton: "px-4 py-2 rounded-xl font-bold text-xs shadow-md",
+      },
+    });
+    return result.isConfirmed;
+  } else {
+    return confirm(message);
+  }
+}
+
 // ================= NAVIGASI & ROUTING =================
 
 function navigateTo(pageName) {
@@ -61,7 +110,7 @@ function initPageLogic(pageName) {
     populateUserProfile();
   } else if (pageName === "admin") {
     if (!currentUser || currentUser.role !== "admin") {
-      alert("Akses ditolak! Anda harus login sebagai Admin.");
+      showAlert("Akses ditolak! Anda harus login sebagai Admin.", "warning");
       navigateTo("login");
       return;
     }
@@ -99,7 +148,7 @@ function logout() {
   sessionStorage.removeItem("user_session");
   currentUser = null;
   updateLogoutButton();
-  alert("Anda telah keluar.");
+  showAlert("Anda telah keluar.", "info");
   navigateTo("login");
 }
 
@@ -270,17 +319,23 @@ window.handleRegisterProcess = async function (e) {
     const res = await response.json();
 
     if (res.status === "success" || res.result === "success") {
-      alert(`Pendaftaran berhasil! ID Anda: ${res.id || "-"}`);
+      await showAlert(
+        `Pendaftaran berhasil! ID Anda: ${res.id || "-"}`,
+        "success",
+      );
       const formEl = document.getElementById("form_pendaftaran");
       if (formEl) formEl.reset();
       window.toggleBajuOptions();
       navigateTo("login");
     } else {
-      alert("Gagal mendaftar: " + (res.message || "Terjadi kesalahan."));
+      showAlert(
+        "Gagal mendaftar: " + (res.message || "Terjadi kesalahan."),
+        "error",
+      );
     }
   } catch (err) {
     console.error(err);
-    alert("Terjadi kesalahan: " + err.message);
+    showAlert("Terjadi kesalahan: " + err.message, "error");
   } finally {
     if (btnSubmit) {
       btnSubmit.disabled = false;
@@ -322,24 +377,24 @@ async function handleLoginSubmit(event) {
 
     if (res.status === "success") {
       saveSession(res.data || res.user || {}, res.role);
-      alert("Login berhasil!");
+      await showAlert("Login berhasil!", "success");
       if (res.role === "admin") {
         navigateTo("admin");
       } else {
         navigateTo("user");
       }
     } else {
-      alert(res.message || "Username atau password salah!");
+      showAlert(res.message || "Username atau password salah!", "error");
     }
   } catch (err) {
     showLoading(false);
-    alert("Gagal melakukan login: " + err.message);
+    showAlert("Gagal melakukan login: " + err.message, "error");
   }
 }
 
 function populateUserProfile() {
   if (!currentUser) {
-    alert("Anda belum login!");
+    showAlert("Anda belum login!", "warning");
     navigateTo("login");
     return;
   }
@@ -389,7 +444,7 @@ function populateUserProfile() {
 async function handleUpdateProfileSubmit(event) {
   event.preventDefault();
   if (!currentUser || !currentUser.id) {
-    alert("Sesi login berakhir. Silakan login kembali.");
+    showAlert("Sesi login berakhir. Silakan login kembali.", "warning");
     navigateTo("login");
     return;
   }
@@ -418,7 +473,7 @@ async function handleUpdateProfileSubmit(event) {
     showLoading(false);
 
     if (res.status === "success") {
-      alert("Profil berhasil diperbarui!");
+      showAlert("Profil berhasil diperbarui!", "success");
       if (nama) currentUser.nama = nama;
       if (no_hp) {
         currentUser.no_hp = no_hp;
@@ -427,11 +482,11 @@ async function handleUpdateProfileSubmit(event) {
       if (ukuran) currentUser.ukuran = ukuran;
       saveSession(currentUser, currentUser.role);
     } else {
-      alert("Gagal memperbarui profil: " + res.message);
+      showAlert("Gagal memperbarui profil: " + res.message, "error");
     }
   } catch (err) {
     showLoading(false);
-    alert("Terjadi kesalahan: " + err.message);
+    showAlert("Terjadi kesalahan: " + err.message, "error");
   }
 }
 
@@ -447,11 +502,11 @@ async function fetchAdminData() {
     if (res.status === "success") {
       renderAdminTable(res.data || []);
     } else {
-      alert("Gagal mengambil data: " + res.message);
+      showAlert("Gagal mengambil data: " + res.message, "error");
     }
   } catch (err) {
     showLoading(false);
-    alert("Terjadi kesalahan: " + err.message);
+    showAlert("Terjadi kesalahan: " + err.message, "error");
   }
 }
 
@@ -485,7 +540,11 @@ function renderAdminTable(dataList) {
 }
 
 async function deleteMember(id) {
-  if (!confirm(`Apakah Anda yakin ingin menghapus anggota ID ${id}?`)) return;
+  const confirmed = await showConfirm(
+    `Apakah Anda yakin ingin menghapus anggota ID ${id}?`,
+    "Hapus Anggota",
+  );
+  if (!confirmed) return;
 
   showLoading(true, "Menghapus data...");
   try {
@@ -501,14 +560,17 @@ async function deleteMember(id) {
     showLoading(false);
 
     if (res.status === "success") {
-      alert("Anggota berhasil dihapus!");
+      await showAlert("Anggota berhasil dihapus!", "success");
       fetchAdminData();
     } else {
-      alert("Gagal menghapus: " + (res.message || "Terjadi kesalahan."));
+      showAlert(
+        "Gagal menghapus: " + (res.message || "Terjadi kesalahan."),
+        "error",
+      );
     }
   } catch (err) {
     showLoading(false);
-    alert("Terjadi kesalahan: " + err.message);
+    showAlert("Terjadi kesalahan: " + err.message, "error");
   }
 }
 
@@ -531,14 +593,15 @@ async function fetchInfoStats() {
     ) {
       processAndRenderStats(res.data);
     } else {
-      alert(
+      showAlert(
         "Gagal mengambil data statistik: " +
           (res.message || "Terjadi kesalahan pada server"),
+        "error",
       );
     }
   } catch (err) {
     console.error(err);
-    alert("Terjadi kesalahan koneksi: " + err.message);
+    showAlert("Terjadi kesalahan koneksi: " + err.message, "error");
   } finally {
     if (loadingEl) loadingEl.classList.add("hidden");
     if (contentEl) contentEl.classList.remove("hidden");
