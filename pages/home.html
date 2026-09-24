@@ -1,0 +1,172 @@
+<div class="p-4 space-y-6">
+  <!-- BANNER / SAMBUTAN -->
+  <div
+    class="bg-gradient-to-r from-sky-600 to-sky-800 rounded-2xl p-5 text-white shadow-lg"
+  >
+    <span
+      class="text-[10px] font-extrabold uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded-full"
+    >
+      Selamat Datang
+    </span>
+    <h1 class="text-lg font-black mt-2 leading-tight">
+      Sistem Informasi Ambalan Rama Sinta
+    </h1>
+    <p class="text-xs text-sky-100 mt-1 opacity-90">
+      Kelola pendaftaran, jersey, dan informasi keanggotaan dalam satu pintu.
+    </p>
+  </div>
+
+  <!-- FAST MENU / MENU CEPAT -->
+  <div>
+    <h2
+      class="text-xs font-black text-slate-500 uppercase tracking-wider mb-3 px-1"
+    >
+      Menu Cepat
+    </h2>
+
+    <div class="grid grid-cols-4 gap-3">
+      <!-- 1. Jersey -->
+      <button
+        onclick="navigateTo('jersey')"
+        class="flex flex-col items-center p-3 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md hover:border-sky-300 transition-all active:scale-95 group"
+      >
+        <div
+          class="w-11 h-11 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center mb-2 group-hover:bg-sky-600 group-hover:text-white transition-colors"
+        >
+          <!-- Icon Jersey / Baju -->
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+            />
+          </svg>
+        </div>
+        <span
+          class="text-[11px] font-bold text-slate-700 group-hover:text-sky-600"
+          >Jersey</span
+        >
+      </button>
+
+      <!-- 2. Info -->
+      <button
+        onclick="navigateTo('info')"
+        class="flex flex-col items-center p-3 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md hover:border-amber-300 transition-all active:scale-95 group"
+      >
+        <div
+          class="w-11 h-11 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-2 group-hover:bg-amber-500 group-hover:text-white transition-colors"
+        >
+          <!-- Icon Info -->
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <span
+          class="text-[11px] font-bold text-slate-700 group-hover:text-amber-600"
+          >Info</span
+        >
+      </button>
+
+      <!-- 3. Bantuan -->
+      <button
+        onclick="navigateTo('bantuan')"
+        class="flex flex-col items-center p-3 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-300 transition-all active:scale-95 group"
+      >
+        <div
+          class="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-2 group-hover:bg-emerald-600 group-hover:text-white transition-colors"
+        >
+          <!-- Icon Bantuan / Support -->
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <span
+          class="text-[11px] font-bold text-slate-700 group-hover:text-emerald-600"
+          >Bantuan</span
+        >
+      </button>
+
+      <!-- 4. Dashboard -->
+      <button
+        onclick="navigateTo('dashboard')"
+        class="flex flex-col items-center p-3 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-300 transition-all active:scale-95 group"
+      >
+        <div
+          class="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-2 group-hover:bg-indigo-600 group-hover:text-white transition-colors"
+        >
+          <!-- Icon Dashboard / Chart -->
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v12a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"
+            />
+          </svg>
+        </div>
+        <span
+          class="text-[11px] font-bold text-slate-700 group-hover:text-indigo-600"
+          >Dashboard</span
+        >
+      </button>
+    </div>
+  </div>
+
+  <!-- PENGUMUMAN / SEKILAS INFO -->
+  <div
+    class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-2"
+  >
+    <div class="flex items-center space-x-2 text-sky-700">
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+        />
+      </svg>
+      <h3 class="text-xs font-bold uppercase tracking-wider">Pengumuman</h3>
+    </div>
+    <p class="text-xs text-slate-600 leading-relaxed">
+      Pendaftaran anggota baru telah dibuka! Silakan klik menu <b>Daftar</b> di
+      navigasi bawah atau pilih menu <b>Jersey</b> untuk melihat spesifikasi
+      ukuran.
+    </p>
+  </div>
+</div>

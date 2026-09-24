@@ -1,0 +1,987 @@
+<div class="p-1 space-y-4">
+  <!-- HEADER HALAMAN -->
+  <div
+    class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm"
+  >
+    <div class="flex items-center space-x-3">
+      <div
+        class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <polyline points="16 11 18 13 22 9"></polyline>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <h2
+            class="text-xs font-extrabold text-slate-800 uppercase tracking-wide"
+          >
+            Rekap Pendaftaran
+          </h2>
+          <span
+            class="text-[9px] font-black bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full uppercase"
+            >Super Admin</span
+          >
+        </div>
+        <p class="text-[10px] text-slate-400">
+          Portal Kelola & Verifikasi Data Anggota
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Tombol Refresh Data -->
+      <button
+        type="button"
+        onclick="loadAdminData()"
+        class="inline-flex items-center gap-1 text-[10px] bg-slate-50 hover:bg-slate-100 text-slate-600 px-2.5 py-1.5 rounded-xl font-bold border border-slate-200 transition-all active:scale-95 cursor-pointer"
+        title="Muat Ulang Data"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-3 h-3"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21.5 2v6h-6"></path>
+          <path d="M21.34 15.57a10 10 0 1 1-.57-8.38"></path>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- RINGKASAN PEMBAYARAN -->
+  <div class="grid grid-cols-3 gap-2.5 text-center font-bold">
+    <div class="bg-blue-50/70 p-3 rounded-2xl border border-blue-100 shadow-sm">
+      <p
+        class="text-[8.5px] font-extrabold text-blue-600/90 uppercase tracking-wider"
+      >
+        Total Pendaftar
+      </p>
+      <p id="stat_total" class="text-lg font-black text-blue-950 mt-0.5">0</p>
+    </div>
+    <div
+      class="bg-emerald-50/70 p-3 rounded-2xl border border-emerald-100 shadow-sm"
+    >
+      <p
+        class="text-[8.5px] font-extrabold text-emerald-600/90 uppercase tracking-wider"
+      >
+        Metode Cash
+      </p>
+      <p id="stat_cash" class="text-lg font-black text-emerald-950 mt-0.5">0</p>
+    </div>
+    <div
+      class="bg-indigo-50/70 p-3 rounded-2xl border border-indigo-100 shadow-sm"
+    >
+      <p
+        class="text-[8.5px] font-extrabold text-indigo-600/90 uppercase tracking-wider"
+      >
+        Metode Transfer
+      </p>
+      <p id="stat_transfer" class="text-lg font-black text-indigo-950 mt-0.5">
+        0
+      </p>
+    </div>
+  </div>
+
+  <!-- REKAP TOTAL UKURAN BAJU -->
+  <div
+    class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm space-y-2.5"
+  >
+    <div
+      class="flex items-center justify-between border-b border-slate-100 pb-2"
+    >
+      <div class="flex items-center gap-1.5">
+        <span class="text-xs">👕</span>
+        <h3
+          class="text-xs font-extrabold text-slate-800 uppercase tracking-wide"
+        >
+          Rekap Ukuran Baju
+        </h3>
+      </div>
+      <span
+        class="text-[9px] font-extrabold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200"
+        >Data Logistik</span
+      >
+    </div>
+
+    <div class="grid grid-cols-6 gap-2 text-center">
+      <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+        <p class="text-[8px] font-extrabold text-slate-400 uppercase">S</p>
+        <p id="stat_s" class="text-sm font-black text-slate-800 mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+        <p class="text-[8px] font-extrabold text-slate-400 uppercase">M</p>
+        <p id="stat_m" class="text-sm font-black text-slate-800 mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+        <p class="text-[8px] font-extrabold text-slate-400 uppercase">L</p>
+        <p id="stat_l" class="text-sm font-black text-slate-800 mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+        <p class="text-[8px] font-extrabold text-slate-400 uppercase">XL</p>
+        <p id="stat_xl" class="text-sm font-black text-slate-800 mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+        <p class="text-[8px] font-extrabold text-slate-400 uppercase">XXL</p>
+        <p id="stat_xxl" class="text-sm font-black text-slate-800 mt-0.5">0</p>
+      </div>
+      <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+        <p class="text-[8px] font-extrabold text-slate-400 uppercase">3XL</p>
+        <p id="stat_xxxl" class="text-sm font-black text-slate-800 mt-0.5">0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER TABEL DATA & FILTER -->
+  <div
+    class="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden"
+  >
+    <!-- PANEL FILTER & PENCARIAN -->
+    <div
+      class="p-3.5 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-between gap-2.5"
+    >
+      <!-- Search Bar -->
+      <div class="relative flex-1 min-w-[160px]">
+        <input
+          type="text"
+          id="searchAdmin"
+          onkeyup="filterTableData()"
+          placeholder="Cari ID atau Nama..."
+          class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-700 placeholder:text-slate-400"
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </div>
+
+      <!-- Filter Dropdowns & Export -->
+      <div class="flex flex-wrap items-center gap-2">
+        <select
+          id="filterPembayaran"
+          onchange="filterTableData()"
+          class="text-xs bg-white border border-slate-200 text-slate-700 px-2.5 py-1.5 rounded-xl font-semibold focus:outline-none focus:border-blue-500 cursor-pointer"
+        >
+          <option value="ALL">Semua Bayar</option>
+          <option value="Cash">Cash</option>
+          <option value="Transfer">Transfer</option>
+        </select>
+
+        <select
+          id="filterUkuran"
+          onchange="filterTableData()"
+          class="text-xs bg-white border border-slate-200 text-slate-700 px-2.5 py-1.5 rounded-xl font-semibold focus:outline-none focus:border-blue-500 cursor-pointer"
+        >
+          <option value="ALL">Semua Ukuran</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+          <option value="3XL">3XL</option>
+        </select>
+
+        <button
+          type="button"
+          onclick="exportTableToCSV()"
+          class="inline-flex items-center gap-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- TABEL DATA -->
+    <div class="overflow-x-auto max-h-96 overflow-y-auto">
+      <table class="w-full text-left border-collapse min-w-[650px]">
+        <thead
+          class="bg-slate-100/80 text-slate-600 text-[9px] font-extrabold uppercase tracking-wider sticky top-0 z-10 border-b border-slate-200"
+        >
+          <tr>
+            <th class="py-2.5 px-3">NTA / ID</th>
+            <th class="py-2.5 px-3">Nama Anggota</th>
+            <th class="py-2.5 px-3">Angkatan</th>
+            <th class="py-2.5 px-3">No. HP</th>
+            <th class="py-2.5 px-3 text-center">Ukuran</th>
+            <th class="py-2.5 px-3">Bayar</th>
+            <th class="py-2.5 px-3">Keterangan</th>
+            <th class="py-2.5 px-3 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody
+          id="tableAdminBody"
+          class="divide-y divide-slate-100 text-xs font-semibold text-slate-700"
+        >
+          <tr>
+            <td colspan="8" class="text-center py-8 text-slate-400 font-medium">
+              Memuat data pendaftaran...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FOOTER TABEL -->
+    <div
+      class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-bold"
+    >
+      <span id="admin_row_count">Menampilkan 0 data</span>
+      <span class="text-slate-400"
+        >Ambalan Rama Sinta • Gudep 05.193 - 05.194</span
+      >
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FORM CRUD (CREATE & UPDATE) -->
+<div
+  id="crudModal"
+  onclick="handleModalBackdropClick(event)"
+  class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4"
+>
+  <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-4">
+    <div class="flex justify-between items-center border-b pb-2">
+      <h3 id="modalTitle" class="font-bold text-sm text-slate-800">
+        Tambah Data Baru
+      </h3>
+      <button
+        type="button"
+        onclick="closeModal()"
+        class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer"
+      >
+        &times;
+      </button>
+    </div>
+
+    <form id="crudForm" onsubmit="submitForm(event)" class="space-y-3 text-xs">
+      <input type="hidden" id="form_is_edit" value="false" />
+
+      <div>
+        <label for="form_id" class="block font-semibold text-slate-600 mb-1"
+          >NTA / ID *</label
+        >
+        <input
+          type="text"
+          id="form_id"
+          required
+          class="w-full border border-slate-200 p-2 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+        />
+      </div>
+
+      <div>
+        <label for="form_nama" class="block font-semibold text-slate-600 mb-1"
+          >Nama Lengkap *</label
+        >
+        <input
+          type="text"
+          id="form_nama"
+          required
+          class="w-full border border-slate-200 p-2 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label
+            for="form_angkatan"
+            class="block font-semibold text-slate-600 mb-1"
+            >Angkatan</label
+          >
+          <input
+            type="text"
+            id="form_angkatan"
+            class="w-full border border-slate-200 p-2 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+          />
+        </div>
+        <div>
+          <label
+            for="form_no_hp"
+            class="block font-semibold text-slate-600 mb-1"
+            >No. HP</label
+          >
+          <input
+            type="text"
+            id="form_no_hp"
+            class="w-full border border-slate-200 p-2 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label
+            for="form_ukuran"
+            class="block font-semibold text-slate-600 mb-1"
+            >Ukuran Baju</label
+          >
+          <select
+            id="form_ukuran"
+            class="w-full border border-slate-200 p-2 rounded-xl focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
+          >
+            <option value="S">S</option>
+            <option value="M" selected>M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+            <option value="3XL">3XL</option>
+          </select>
+        </div>
+        <div>
+          <label
+            for="form_pembayaran"
+            class="block font-semibold text-slate-600 mb-1"
+            >Pembayaran</label
+          >
+          <select
+            id="form_pembayaran"
+            class="w-full border border-slate-200 p-2 rounded-xl focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
+          >
+            <option value="Cash">Cash</option>
+            <option value="Transfer">Transfer</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="form_keterangan"
+          class="block font-semibold text-slate-600 mb-1"
+          >Keterangan</label
+        >
+        <textarea
+          id="form_keterangan"
+          rows="2"
+          class="w-full border border-slate-200 p-2 rounded-xl focus:outline-none focus:border-blue-500 font-medium"
+        ></textarea>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button
+          type="button"
+          onclick="closeModal()"
+          class="px-3 py-1.5 bg-slate-100 text-slate-600 font-bold rounded-xl cursor-pointer hover:bg-slate-200 transition"
+        >
+          Batal
+        </button>
+        <button
+          type="submit"
+          id="btnSubmit"
+          class="px-4 py-1.5 bg-blue-600 text-white font-bold rounded-xl cursor-pointer hover:bg-blue-700 transition"
+        >
+          Simpan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  var globalDataList = [];
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadAdminData();
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    });
+  });
+
+  function escapeHtml(str) {
+    if (!str && str !== 0) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function escapeJs(str) {
+    if (!str && str !== 0) return "";
+    return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  }
+
+  function loadAdminData() {
+    var tableBody = document.getElementById("tableAdminBody");
+    if (tableBody) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-8 text-slate-400 font-medium animate-pulse">
+            Mengambil data dari server...
+          </td>
+        </tr>`;
+    }
+
+    if (typeof google !== "undefined" && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(renderAdminData)
+        .withFailureHandler(function (err) {
+          if (tableBody) {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="8" class="text-center py-6 text-rose-500 font-bold">
+                  Gagal memuat data: ${escapeHtml(err.message || err)}
+                </td>
+              </tr>`;
+          }
+        })
+        .getAdminData();
+    } else {
+      console.warn("Script berjalan di luar lingkungan Google Apps Script.");
+      if (tableBody) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-8 text-slate-400 font-medium">
+              Mode Preview Lokal (Koneksi Google Apps Script tidak terdeteksi).
+            </td>
+          </tr>`;
+      }
+      resetStats();
+    }
+  }
+
+  // PARSER BESERTA AUTO-HEALING & PERBAIKAN UKURAN BAJU
+  function normalizeUser(item) {
+    if (!item) return null;
+
+    var user = {
+      id: "-",
+      nama: "-",
+      angkatan: "-",
+      no_hp: "-",
+      ukuran: "-",
+      pembayaran: "-",
+      keterangan: "-",
+      link_foto: "",
+      link_bukti: "",
+    };
+
+    if (!Array.isArray(item) && typeof item === "object") {
+      user.id = String(
+        item.id ||
+          item.NTA ||
+          item.ID ||
+          item.nta ||
+          item["NTA / ID"] ||
+          item["NTA/ID"] ||
+          "-",
+      ).trim();
+      user.nama = String(
+        item.nama ||
+          item.Nama ||
+          item.NAMA ||
+          item["Nama Lengkap"] ||
+          item.nama_lengkap ||
+          "-",
+      ).trim();
+      user.angkatan = String(
+        item.angkatan ||
+          item.Angkatan ||
+          item.ANGKATAN ||
+          item.Kelas ||
+          item.kelas ||
+          "-",
+      ).trim();
+      user.no_hp = String(
+        item.no_hp ||
+          item.NoHP ||
+          item.hp ||
+          item.HP ||
+          item["No. HP"] ||
+          item["No HP"] ||
+          "-",
+      ).trim();
+
+      user.ukuran = String(
+        item.ukuran ||
+          item.Ukuran ||
+          item["Ukuran Baju"] ||
+          item["ukuran_baju"] ||
+          item.ukuran_baju ||
+          item.ukuranBaju ||
+          item.size ||
+          item.Size ||
+          item.UKURAN ||
+          "-",
+      ).trim();
+
+      user.pembayaran = String(
+        item.pembayaran ||
+          item.Pembayaran ||
+          item.Bayar ||
+          item.bayar ||
+          item["Metode Pembayaran"] ||
+          item.metode_pembayaran ||
+          item.PEMBAYARAN ||
+          "-",
+      ).trim();
+
+      user.keterangan = String(
+        item.keterangan || item.Keterangan || item.KETERANGAN || "-",
+      ).trim();
+      user.link_foto = item.link_foto || item.foto || "";
+      user.link_bukti = item.link_bukti || item.bukti || "";
+    } else if (Array.isArray(item)) {
+      var firstCell = String(item[0] || "")
+        .toLowerCase()
+        .trim();
+      if (
+        ["id", "nta", "nama", "timestamp", "id/nta", "no"].indexOf(
+          firstCell,
+        ) !== -1
+      ) {
+        return null;
+      }
+
+      var isTimestamp = false;
+      if (item[0] instanceof Date) {
+        isTimestamp = true;
+      } else if (
+        typeof item[0] === "string" &&
+        (item[0].includes("T") ||
+          item[0].includes(":") ||
+          item[0].includes("/"))
+      ) {
+        if (item.length > 7) isTimestamp = true;
+      }
+
+      var idx = isTimestamp ? 1 : 0;
+      user.id = String(item[idx] || "-").trim();
+      user.nama = String(item[idx + 1] || "-").trim();
+      user.angkatan = String(item[idx + 2] || "-").trim();
+      user.no_hp = String(item[idx + 3] || "-")
+        .replace(/^'/, "")
+        .trim();
+      user.ukuran = String(item[idx + 4] || "-").trim();
+      user.pembayaran = String(item[idx + 5] || "-").trim();
+      user.keterangan = String(item[idx + 6] || "-").trim();
+      user.link_foto = item[idx + 7] || "";
+      user.link_bukti = item[idx + 8] || "";
+    } else {
+      return null;
+    }
+
+    // LOGIKA AUTO-HEALING
+    var isPaymentVal = function (val) {
+      var v = String(val || "")
+        .toLowerCase()
+        .trim();
+      return (
+        v === "cash" ||
+        v === "transfer" ||
+        v.includes("tunai") ||
+        v.includes("tf")
+      );
+    };
+
+    var isSizeVal = function (val) {
+      var v = String(val || "")
+        .toUpperCase()
+        .trim()
+        .replace(/\s+/g, "");
+      return ["S", "M", "L", "XL", "XXL", "3XL", "XXXL"].indexOf(v) !== -1;
+    };
+
+    if (isPaymentVal(user.ukuran) && isSizeVal(user.pembayaran)) {
+      var temp = user.ukuran;
+      user.ukuran = user.pembayaran;
+      user.pembayaran = temp;
+    } else if (
+      isPaymentVal(user.ukuran) &&
+      (!user.pembayaran || user.pembayaran === "-")
+    ) {
+      user.pembayaran = user.ukuran;
+      user.ukuran = "-";
+    } else if (
+      isSizeVal(user.pembayaran) &&
+      (!user.ukuran || user.ukuran === "-")
+    ) {
+      user.ukuran = user.pembayaran;
+      user.pembayaran = "-";
+    }
+
+    if (isPaymentVal(user.angkatan)) {
+      if (!user.pembayaran || user.pembayaran === "-")
+        user.pembayaran = user.angkatan;
+      user.angkatan = "-";
+    } else if (isSizeVal(user.angkatan)) {
+      if (!user.ukuran || user.ukuran === "-") user.ukuran = user.angkatan;
+      user.angkatan = "-";
+    }
+
+    if (isSizeVal(user.no_hp)) {
+      if (!user.ukuran || user.ukuran === "-") user.ukuran = user.no_hp;
+      user.no_hp = "-";
+    }
+
+    return user;
+  }
+
+  function renderAdminData(rawDataList) {
+    var tableBody = document.getElementById("tableAdminBody");
+    if (!tableBody) return;
+
+    if (typeof rawDataList === "string") {
+      try {
+        rawDataList = JSON.parse(rawDataList);
+      } catch (e) {
+        console.error("Gagal mengurai respons JSON:", e);
+      }
+    }
+
+    if (rawDataList && rawDataList.data && Array.isArray(rawDataList.data)) {
+      rawDataList = rawDataList.data;
+    }
+
+    if (
+      !rawDataList ||
+      !Array.isArray(rawDataList) ||
+      rawDataList.length === 0
+    ) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-8 text-slate-400 font-medium">
+            Belum ada data pendaftaran yang tersimpan.
+          </td>
+        </tr>`;
+      resetStats();
+      return;
+    }
+
+    globalDataList = [];
+    var total = 0;
+    var cash = 0,
+      transfer = 0;
+    var s = 0,
+      m = 0,
+      l = 0,
+      xl = 0,
+      xxl = 0,
+      xxxl = 0;
+    var htmlRows = "";
+
+    rawDataList.forEach(function (raw) {
+      var user = normalizeUser(raw);
+      if (!user || user.id === "-" || user.id === "") return;
+
+      globalDataList.push(user);
+      total++;
+
+      var bayar = user.pembayaran;
+      if (bayar.toLowerCase() === "cash") cash++;
+      else if (bayar.toLowerCase() === "transfer") transfer++;
+
+      var uk = user.ukuran.toUpperCase().trim().replace(/\s+/g, "");
+      if (uk === "S") s++;
+      else if (uk === "M") m++;
+      else if (uk === "L") l++;
+      else if (uk === "XL") xl++;
+      else if (uk === "XXL") xxl++;
+      else if (uk === "3XL" || uk === "XXXL") xxxl++;
+
+      var badgeBayarClass =
+        bayar.toLowerCase() === "cash"
+          ? "bg-emerald-100 text-emerald-800"
+          : bayar.toLowerCase() === "transfer"
+            ? "bg-indigo-100 text-indigo-800"
+            : "bg-slate-100 text-slate-600";
+
+      var escapedId = escapeJs(user.id);
+
+      htmlRows += `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="py-2.5 px-3 font-mono text-[11px] font-bold text-amber-900">${escapeHtml(user.id)}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-800 uppercase">${escapeHtml(user.nama)}</td>
+          <td class="py-2.5 px-3 text-slate-600">${escapeHtml(user.angkatan)}</td>
+          <td class="py-2.5 px-3 font-mono text-slate-600">${escapeHtml(user.no_hp)}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-black bg-slate-100 text-slate-800 border border-slate-200">
+              ${escapeHtml(uk !== "" ? uk : "-")}
+            </span>
+          </td>
+          <td class="py-2.5 px-3">
+            <span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${badgeBayarClass}">
+              ${escapeHtml(bayar)}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-slate-500 text-[11px] truncate max-w-[120px]" title="${escapeHtml(user.keterangan)}">${escapeHtml(user.keterangan)}</td>
+          <td class="py-2.5 px-3 text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button onclick="viewUserKTA('${escapedId}')" title="Lihat KTA" class="p-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 transition cursor-pointer">
+                ⚜️
+              </button>
+              <button onclick="openModalEdit('${escapedId}')" title="Edit Data" class="p-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition cursor-pointer">
+                ✏️
+              </button>
+              <button onclick="deleteUser('${escapedId}')" title="Hapus Data" class="p-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    if (total === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-8 text-slate-400 font-medium">
+            Tidak ada data yang valid.
+          </td>
+        </tr>`;
+      resetStats();
+      return;
+    }
+
+    tableBody.innerHTML = htmlRows;
+
+    setElText("stat_total", total);
+    setElText("stat_cash", cash);
+    setElText("stat_transfer", transfer);
+    setElText("stat_s", s);
+    setElText("stat_m", m);
+    setElText("stat_l", l);
+    setElText("stat_xl", xl);
+    setElText("stat_xxl", xxl);
+    setElText("stat_xxxl", xxxl);
+    setElText("admin_row_count", "Menampilkan " + total + " data");
+  }
+
+  function openModalEdit(id) {
+    var targetId = String(id);
+    var user = globalDataList.find(function (u) {
+      return String(u.id) === targetId;
+    });
+    if (!user) return;
+
+    document.getElementById("modalTitle").innerText = "Edit Data Anggota";
+    document.getElementById("form_is_edit").value = "true";
+    document.getElementById("form_id").value = user.id;
+    document.getElementById("form_id").readOnly = true;
+    document.getElementById("form_nama").value = user.nama;
+    document.getElementById("form_angkatan").value =
+      user.angkatan === "-" ? "" : user.angkatan;
+    document.getElementById("form_no_hp").value =
+      user.no_hp === "-" ? "" : user.no_hp;
+    document.getElementById("form_ukuran").value =
+      user.ukuran !== "-" ? user.ukuran : "M";
+    document.getElementById("form_pembayaran").value =
+      user.pembayaran !== "-" ? user.pembayaran : "Cash";
+    document.getElementById("form_keterangan").value =
+      user.keterangan === "-" ? "" : user.keterangan;
+
+    document.getElementById("crudModal").classList.remove("hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("crudModal").classList.add("hidden");
+  }
+
+  function handleModalBackdropClick(e) {
+    if (e.target.id === "crudModal") {
+      closeModal();
+    }
+  }
+
+  function submitForm(e) {
+    e.preventDefault();
+    var btnSubmit = document.getElementById("btnSubmit");
+    btnSubmit.innerText = "Menyimpan...";
+    btnSubmit.disabled = true;
+
+    var isEdit = document.getElementById("form_is_edit").value === "true";
+    var payload = {
+      id: document.getElementById("form_id").value.trim(),
+      nama: document.getElementById("form_nama").value.trim(),
+      angkatan: document.getElementById("form_angkatan").value.trim(),
+      no_hp: document.getElementById("form_no_hp").value.trim(),
+      ukuran: document.getElementById("form_ukuran").value,
+      pembayaran: document.getElementById("form_pembayaran").value,
+      keterangan: document.getElementById("form_keterangan").value.trim(),
+      isEdit: isEdit,
+    };
+
+    if (typeof google !== "undefined" && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(function (res) {
+          btnSubmit.innerText = "Simpan";
+          btnSubmit.disabled = false;
+          closeModal();
+          alert((res && res.message) || "Data berhasil disimpan!");
+          loadAdminData();
+        })
+        .withFailureHandler(function (err) {
+          btnSubmit.innerText = "Simpan";
+          btnSubmit.disabled = false;
+          alert("Gagal menyimpan data: " + (err.message || err));
+        })
+        .saveAdminData(payload);
+    } else {
+      btnSubmit.innerText = "Simpan";
+      btnSubmit.disabled = false;
+      alert("Memerlukan koneksi Google Apps Script.");
+    }
+  }
+
+  function deleteUser(id) {
+    if (
+      !confirm(
+        "Apakah Anda yakin ingin menghapus data anggota dengan ID: " + id + "?",
+      )
+    )
+      return;
+
+    if (typeof google !== "undefined" && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(function (res) {
+          alert((res && res.message) || "Data berhasil dihapus!");
+          loadAdminData();
+        })
+        .withFailureHandler(function (err) {
+          alert("Gagal menghapus data: " + (err.message || err));
+        })
+        .handleDelete({ id: id });
+    } else {
+      alert("Operasi ini memerlukan koneksi backend Google Apps Script.");
+    }
+  }
+
+  function filterTableData() {
+    var searchInput = document
+      .getElementById("searchAdmin")
+      .value.toUpperCase();
+    var filterBayar = document.getElementById("filterPembayaran").value;
+    var filterUkuran = document.getElementById("filterUkuran").value;
+    var tableBody = document.getElementById("tableAdminBody");
+    var rows = tableBody.getElementsByTagName("tr");
+    var visibleCount = 0;
+
+    for (var i = 0; i < rows.length; i++) {
+      var cells = rows[i].getElementsByTagName("td");
+      if (cells.length < 7) continue;
+
+      var idText = cells[0].textContent || cells[0].innerText;
+      var nameText = cells[1].textContent || cells[1].innerText;
+      var ukuranText = cells[4].textContent || cells[4].innerText;
+      var bayarText = cells[5].textContent || cells[5].innerText;
+
+      var matchesSearch =
+        idText.toUpperCase().indexOf(searchInput) > -1 ||
+        nameText.toUpperCase().indexOf(searchInput) > -1;
+      var matchesBayar =
+        filterBayar === "ALL" ||
+        bayarText.trim().toLowerCase().indexOf(filterBayar.toLowerCase()) > -1;
+      var matchesUkuran =
+        filterUkuran === "ALL" ||
+        ukuranText.trim().toUpperCase() === filterUkuran.toUpperCase();
+
+      if (matchesSearch && matchesBayar && matchesUkuran) {
+        rows[i].style.display = "";
+        visibleCount++;
+      } else {
+        rows[i].style.display = "none";
+      }
+    }
+
+    setElText("admin_row_count", "Menampilkan " + visibleCount + " data");
+  }
+
+  function viewUserKTA(id) {
+    alert("Membuka data KTA untuk ID: " + id);
+  }
+
+  function exportTableToCSV() {
+    var table = document.getElementById("tableAdminBody");
+    var rows = table.querySelectorAll("tr");
+    var csv = ["NTA/ID,Nama,Angkatan,No HP,Ukuran Baju,Pembayaran,Keterangan"];
+
+    for (var i = 0; i < rows.length; i++) {
+      var cols = rows[i].querySelectorAll("td");
+      if (cols.length >= 7 && rows[i].style.display !== "none") {
+        var rowData = [
+          '"' + cols[0].innerText.trim().replace(/"/g, '""') + '"',
+          '"' + cols[1].innerText.trim().replace(/"/g, '""') + '"',
+          '"' + cols[2].innerText.trim().replace(/"/g, '""') + '"',
+          '"' + cols[3].innerText.trim().replace(/"/g, '""') + '"',
+          '"' + cols[4].innerText.trim().replace(/"/g, '""') + '"',
+          '"' + cols[5].innerText.trim().replace(/"/g, '""') + '"',
+          '"' + cols[6].innerText.trim().replace(/"/g, '""') + '"',
+        ];
+        csv.push(rowData.join(","));
+      }
+    }
+
+    var csvFile = new Blob(["\uFEFF" + csv.join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+    var downloadLink = document.createElement("a");
+    downloadLink.download = "Rekap_Pendaftaran_Pramuka.csv";
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
+
+  function setElText(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.innerText = val;
+  }
+
+  function resetStats() {
+    [
+      "stat_total",
+      "stat_cash",
+      "stat_transfer",
+      "stat_s",
+      "stat_m",
+      "stat_l",
+      "stat_xl",
+      "stat_xxl",
+      "stat_xxxl",
+    ].forEach(function (id) {
+      setElText(id, 0);
+    });
+    setElText("admin_row_count", "Menampilkan 0 data");
+  }
+</script>
