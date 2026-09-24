@@ -321,7 +321,7 @@ window.handleRegisterProcess = async function (e) {
     if (res.status === "success" || res.result === "success") {
       await showAlert(
         `Pendaftaran berhasil! ID Anda: ${res.id || "-"}`,
-        "success",
+        "success"
       );
       const formEl = document.getElementById("form_pendaftaran");
       if (formEl) formEl.reset();
@@ -330,7 +330,7 @@ window.handleRegisterProcess = async function (e) {
     } else {
       showAlert(
         "Gagal mendaftar: " + (res.message || "Terjadi kesalahan."),
-        "error",
+        "error"
       );
     }
   } catch (err) {
@@ -490,59 +490,324 @@ async function handleUpdateProfileSubmit(event) {
   }
 }
 
-// ================= PANEL ADMIN =================
+// ================= PANEL ADMIN & REKAP DATA (CRUD + FILTER + EXPORT) =================
 
-async function fetchAdminData() {
-  showLoading(true, "Mengambil data anggota...");
+// Variable global untuk data admin
+let adminRawData = [];
+let filteredAdminData = [];
+
+/**
+ * Memuat data pendaftaran dari Google Apps Script
+ */
+async function loadAdminData() {
+  const tbody = document.getElementById("tableAdminBody") || document.getElementById("admin-table-body");
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center py-8 text-slate-400 font-medium">
+          <div class="flex items-center justify-center gap-2">
+            <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <span>Mengambil data pendaftaran...</span>
+          </div>
+        </td>
+      </tr>`;
+  }
+
   try {
     const response = await fetch(`${SCRIPT_URL}?action=getAdminData`);
     const res = await response.json();
-    showLoading(false);
 
-    if (res.status === "success") {
-      renderAdminTable(res.data || []);
+    if (res.status === "success" || res.result === "success") {
+      adminRawData = res.data || [];
+      calculateAdminStats(adminRawData);
+      filterTableData();
     } else {
-      showAlert("Gagal mengambil data: " + res.message, "error");
+      showAlert("Gagal mengambil data: " + (res.message || "Terjadi kesalahan"), "error");
     }
   } catch (err) {
-    showLoading(false);
-    showAlert("Terjadi kesalahan: " + err.message, "error");
+    console.error(err);
+    showAlert("Terjadi kesalahan koneksi: " + err.message, "error");
   }
 }
 
+// Aliasing agar sinkron dengan router initPageLogic()
+async function fetchAdminData() {
+  return loadAdminData();
+}
+
+/**
+ * Menghitung dan merender statistik (Ringkasan Bayar & Rekap Ukuran Baju)
+ */
+function calculateAdminStats(data) {
+  let total = data.length;
+  let cashCount = 0;
+  let transferCount = 0;
+
+  const sizeCounts = {
+    S: 0,
+    M: 0,
+    L: 0,
+    XL: 0,
+    XXL: 0,
+    "3XL": 0,
+  };
+
+  data.forEach((item) => {
+    // Hitung Metode Pembayaran
+    const method = String(item.pembayaran || "").trim().toLowerCase();
+    if (method === "cash") cashCount++;
+    else if (method === "transfer") transferCount++;
+
+    // Hitung Ukuran Baju
+    const size = String(item.ukuran || "").trim().toUpperCase();
+    if (sizeCounts.hasOwnProperty(size)) {
+      sizeCounts[size]++;
+    }
+  });
+
+  // Update statistik di DOM
+  const elTotal = document.getElementById("stat_total");
+  const elCash = document.getElementById("stat_cash");
+  const elTransfer = document.getElementById("stat_transfer");
+
+  if (elTotal) elTotal.textContent = total;
+  if (elCash) elCash.textContent = cashCount;
+  if (elTransfer) elTransfer.textContent = transferCount;
+
+  // Update rekap ukuran baju
+  const sizes = ["S", "M", "L", "XL", "XXL", "3XL"];
+  sizes.forEach((s) => {
+    const key = s.toLowerCase();
+    const el = document.getElementById(`stat_${key}`);
+    if (el) el.textContent = sizeCounts[s] || 0;
+  });
+}
+
+/**
+ * Menyaring (Filter & Search) data berdasarkan kata kunci, metode bayar, & ukuran
+ */
+function filterTableData() {
+  const searchVal = (document.getElementById("searchAdmin")?.value || "").toLowerCase().trim();
+  const filterBayar = document.getElementById("filterPembayaran")?.value || "ALL";
+  const filterUkuran = document.getElementById("filterUkuran")?.value || "ALL";
+
+  filteredAdminData = adminRawData.filter((item) => {
+    const idStr = String(item.id || "").toLowerCase();
+    const namaStr = String(item.nama || "").toLowerCase();
+    const matchesSearch = idStr.includes(searchVal) || namaStr.includes(searchVal);
+
+    const itemBayar = String(item.pembayaran || "").trim();
+    const matchesBayar = filterBayar === "ALL" || itemBayar === filterBayar;
+
+    const itemUkuran = String(item.ukuran || "").trim().toUpperCase();
+    const matchesUkuran = filterUkuran === "ALL" || itemUkuran === filterUkuran;
+
+    return matchesSearch && matchesBayar && matchesUkuran;
+  });
+
+  renderAdminTable(filteredAdminData);
+}
+
+/**
+ * Merender baris tabel pendaftaran
+ */
 function renderAdminTable(dataList) {
-  const container = document.getElementById("admin-table-body");
-  if (!container) return;
+  const tbody = document.getElementById("tableAdminBody") || document.getElementById("admin-table-body");
+  const rowCountEl = document.getElementById("admin_row_count");
+
+  if (rowCountEl) {
+    rowCountEl.textContent = `Menampilkan ${dataList.length} dari ${adminRawData.length} data`;
+  }
+
+  if (!tbody) return;
 
   if (dataList.length === 0) {
-    container.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-xs text-slate-400">Belum ada data anggota.</td></tr>`;
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center py-6 text-slate-400 font-medium">
+          Tidak ada data yang sesuai.
+        </td>
+      </tr>`;
     return;
   }
 
-  container.innerHTML = dataList
-    .map(
-      (item) => `
-    <tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
-      <td class="p-2 font-bold text-slate-700">${item.id || "-"}</td>
-      <td class="p-2 font-semibold">${item.nama || "-"}</td>
-      <td class="p-2">${item.angkatan || "-"}</td>
-      <td class="p-2">${item.no_hp || item.hp || "-"}</td>
-      <td class="p-2">${item.pembayaran || "-"}</td>
-      <td class="p-2 text-center">
-        <button onclick="deleteMember('${item.id}')" class="bg-red-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold hover:bg-red-600 transition">
-          Hapus
-        </button>
-      </td>
-    </tr>
-  `,
-    )
+  tbody.innerHTML = dataList
+    .map((item) => {
+      const bayarClass =
+        item.pembayaran === "Transfer"
+          ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+          : "bg-emerald-50 text-emerald-700 border-emerald-200";
+
+      return `
+      <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition-colors">
+        <td class="py-2.5 px-3 font-bold text-slate-800">${item.id || "-"}</td>
+        <td class="py-2.5 px-3 font-semibold text-slate-900">${item.nama || "-"}</td>
+        <td class="py-2.5 px-3 text-slate-600">${item.angkatan || "-"}</td>
+        <td class="py-2.5 px-3 text-slate-600">${item.no_hp || item.hp || "-"}</td>
+        <td class="py-2.5 px-3 text-center">
+          <span class="px-2 py-0.5 rounded-lg bg-slate-100 font-extrabold text-[10px] text-slate-700">
+            ${item.ukuran || "-"}
+          </span>
+        </td>
+        <td class="py-2.5 px-3">
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-bold border ${bayarClass}">
+            ${item.pembayaran || "-"}
+          </span>
+        </td>
+        <td class="py-2.5 px-3 text-slate-500 text-[11px] max-w-[150px] truncate" title="${item.keterangan || ""}">
+          ${item.keterangan || "-"}
+        </td>
+        <td class="py-2.5 px-3 text-center">
+          <div class="flex items-center justify-center gap-1.5">
+            <button 
+              type="button"
+              onclick="openModalEdit('${item.id}')"
+              class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-1 rounded-lg text-[10px] font-bold transition active:scale-95 cursor-pointer"
+            >
+              Edit
+            </button>
+            <button 
+              type="button"
+              onclick="deleteMember('${item.id}')"
+              class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2 py-1 rounded-lg text-[10px] font-bold transition active:scale-95 cursor-pointer"
+            >
+              Hapus
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+    })
     .join("");
+}
+
+// ================= MODAL & MANAJEMEN KONTROL CRUD =================
+
+function openModalCreate() {
+  const modal = document.getElementById("crudModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const formIsEdit = document.getElementById("form_is_edit");
+  const formId = document.getElementById("form_id");
+  const form = document.getElementById("crudForm");
+
+  if (form) form.reset();
+  if (modalTitle) modalTitle.textContent = "Tambah Data Baru";
+  if (formIsEdit) formIsEdit.value = "false";
+  if (formId) {
+    formId.readOnly = false;
+    formId.classList.remove("bg-slate-100");
+  }
+
+  if (modal) modal.classList.remove("hidden");
+}
+
+function openModalEdit(id) {
+  const item = adminRawData.find((d) => String(d.id) === String(id));
+  if (!item) {
+    showAlert("Data anggota tidak ditemukan!", "error");
+    return;
+  }
+
+  const modal = document.getElementById("crudModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const formIsEdit = document.getElementById("form_is_edit");
+
+  // Populate Input Form
+  document.getElementById("form_id").value = item.id || "";
+  document.getElementById("form_nama").value = item.nama || "";
+  document.getElementById("form_angkatan").value = item.angkatan || "";
+  document.getElementById("form_no_hp").value = item.no_hp || item.hp || "";
+  document.getElementById("form_ukuran").value = item.ukuran || "M";
+  document.getElementById("form_pembayaran").value = item.pembayaran || "Cash";
+  document.getElementById("form_keterangan").value = item.keterangan || "";
+
+  // Set ID readonly saat edit
+  const formId = document.getElementById("form_id");
+  if (formId) {
+    formId.readOnly = true;
+    formId.classList.add("bg-slate-100");
+  }
+
+  if (modalTitle) modalTitle.textContent = "Edit Data Anggota";
+  if (formIsEdit) formIsEdit.value = "true";
+
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeModal() {
+  const modal = document.getElementById("crudModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function handleModalBackdropClick(event) {
+  if (event.target.id === "crudModal") {
+    closeModal();
+  }
+}
+
+async function submitForm(e) {
+  if (e) e.preventDefault();
+
+  const isEdit = document.getElementById("form_is_edit")?.value === "true";
+  const btnSubmit = document.getElementById("btnSubmit");
+  const originalText = btnSubmit ? btnSubmit.innerHTML : "Simpan";
+
+  const payload = {
+    action: isEdit ? "updateMember" : "createMember",
+    id: document.getElementById("form_id")?.value.trim(),
+    nama: document.getElementById("form_nama")?.value.trim(),
+    angkatan: document.getElementById("form_angkatan")?.value.trim() || "-",
+    no_hp: document.getElementById("form_no_hp")?.value.trim() || "",
+    hp: document.getElementById("form_no_hp")?.value.trim() || "",
+    ukuran: document.getElementById("form_ukuran")?.value || "M",
+    pembayaran: document.getElementById("form_pembayaran")?.value || "Cash",
+    keterangan: document.getElementById("form_keterangan")?.value.trim() || "",
+  };
+
+  if (!payload.id || !payload.nama) {
+    showAlert("NTA / ID dan Nama Lengkap wajib diisi!", "warning");
+    return;
+  }
+
+  try {
+    if (btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<span>Menyimpan...</span>`;
+    }
+
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    });
+
+    const res = await response.json();
+
+    if (res.status === "success" || res.result === "success") {
+      showAlert(
+        isEdit ? "Data berhasil diperbarui!" : "Data baru berhasil ditambahkan!",
+        "success"
+      );
+      closeModal();
+      loadAdminData();
+    } else {
+      showAlert("Gagal menyimpan data: " + (res.message || "Terjadi kesalahan"), "error");
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert("Terjadi kesalahan: " + err.message, "error");
+  } finally {
+    if (btnSubmit) {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = originalText;
+    }
+  }
 }
 
 async function deleteMember(id) {
   const confirmed = await showConfirm(
-    `Apakah Anda yakin ingin menghapus anggota ID ${id}?`,
-    "Hapus Anggota",
+    `Apakah Anda yakin ingin menghapus anggota ID ${id}? Data yang dihapus tidak dapat dikembalikan.`,
+    "Hapus Anggota"
   );
   if (!confirmed) return;
 
@@ -559,20 +824,65 @@ async function deleteMember(id) {
     const res = await response.json();
     showLoading(false);
 
-    if (res.status === "success") {
+    if (res.status === "success" || res.result === "success") {
       await showAlert("Anggota berhasil dihapus!", "success");
-      fetchAdminData();
+      loadAdminData();
     } else {
-      showAlert(
-        "Gagal menghapus: " + (res.message || "Terjadi kesalahan."),
-        "error",
-      );
+      showAlert("Gagal menghapus: " + (res.message || "Terjadi kesalahan."), "error");
     }
   } catch (err) {
     showLoading(false);
     showAlert("Terjadi kesalahan: " + err.message, "error");
   }
 }
+
+function exportTableToCSV() {
+  if (!filteredAdminData || filteredAdminData.length === 0) {
+    showAlert("Tidak ada data untuk diekspor!", "warning");
+    return;
+  }
+
+  const headers = ["NTA / ID", "Nama Anggota", "Angkatan", "No. HP", "Ukuran Baju", "Pembayaran", "Keterangan"];
+  
+  const csvRows = [
+    headers.join(","),
+    ...filteredAdminData.map((row) =>
+      [
+        `"${row.id || ""}"`,
+        `"${(row.nama || "").replace(/"/g, '""')}"`,
+        `"${row.angkatan || ""}"`,
+        `"${row.no_hp || row.hp || ""}"`,
+        `"${row.ukuran || ""}"`,
+        `"${row.pembayaran || ""}"`,
+        `"${(row.keterangan || "").replace(/"/g, '""')}"`,
+      ].join(",")
+    ),
+  ];
+
+  const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csvRows.join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  
+  const today = new Date().toISOString().split("T")[0];
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `Rekap_Pendaftaran_Alumni_${today}.csv`);
+  document.body.appendChild(link);
+  
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Window attachment
+window.fetchAdminData = fetchAdminData;
+window.loadAdminData = loadAdminData;
+window.filterTableData = filterTableData;
+window.openModalCreate = openModalCreate;
+window.openModalEdit = openModalEdit;
+window.closeModal = closeModal;
+window.handleModalBackdropClick = handleModalBackdropClick;
+window.submitForm = submitForm;
+window.deleteMember = deleteMember;
+window.exportTableToCSV = exportTableToCSV;
 
 // ================= STATISTIK / INFO =================
 
@@ -596,7 +906,7 @@ async function fetchInfoStats() {
       showAlert(
         "Gagal mengambil data statistik: " +
           (res.message || "Terjadi kesalahan pada server"),
-        "error",
+        "error"
       );
     }
   } catch (err) {
