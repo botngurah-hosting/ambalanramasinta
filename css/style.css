@@ -1,0 +1,79 @@
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: #f8fafc; /* Warna latar belakang bersih */
+  overflow-x: hidden;
+}
+
+/* Container utama dashboard agar memenuhi layar laptop */
+#app-content {
+  width: 100%;
+  min-height: 100vh;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar */
+#app-content::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+#app-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+#app-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* Hanya Kartu KTA yang dikunci lebarnya agar berbentuk kartu */
+#kta-card {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* Responsif khusus HP */
+@media screen and (max-width: 640px) {
+  #app-content {
+    padding: 0.5rem;
+  }
+}
+
+/* Aturan khusus cetak KTA (Print Mode) */
+@media print {
+  @page {
+    size: auto;
+    margin: 0;
+  }
+  html,
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  #kta-card,
+  #kta-card * {
+    visibility: visible !important;
+  }
+  #kta-card {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 380px !important;
+    max-width: 380px !important;
+    margin: 0 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    z-index: 999999 !important;
+  }
+}
