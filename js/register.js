@@ -53,6 +53,13 @@ window.toggleBajuOptions = function () {
 window.handleRegisterProcess = async function (e) {
   if (e) e.preventDefault();
 
+  // 1. CEK APABILA USER SUDAH PERNAH DAFTAR DARI BROWSER/PERANGKAT INI
+  if (localStorage.getItem("has_registered") === "true") {
+    showAlert("Anda sudah pernah melakukan pendaftaran sebelumnya!", "warning");
+    navigateTo("login");
+    return;
+  }
+
   const btnSubmit = document.getElementById("btn_submit_reg");
   const originalText = btnSubmit ? btnSubmit.innerHTML : "";
 
@@ -118,6 +125,10 @@ window.handleRegisterProcess = async function (e) {
     const res = await response.json();
 
     if (res.status === "success" || res.result === "success") {
+      // 2. TANDAI BAHWA PERANGKAT/PENGGUNA SUDAH BERHASIL DAFTAR
+      localStorage.setItem("has_registered", "true");
+      if (res.id) localStorage.setItem("registered_id", res.id);
+
       await showAlert(
         `Pendaftaran berhasil! ID Anda: ${res.id || "-"}`,
         "success",
@@ -126,8 +137,9 @@ window.handleRegisterProcess = async function (e) {
       window.toggleBajuOptions();
       navigateTo("login");
     } else {
+      // Tangani penolakan dari server jika No HP / Data sudah terdaftar
       showAlert(
-        "Gagal mendaftar: " + (res.message || "Terjadi kesalahan."),
+        "Gagal mendaftar: " + (res.message || "Data sudah terdaftar."),
         "error",
       );
     }
